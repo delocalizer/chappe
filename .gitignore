@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.swp
+/received
+/received.gz
+/received.ods
+/tests/fixtures/gzods.*
