@@ -84,9 +84,11 @@ Output is written atomically **only when every page passes its checksum and the
 end marker confirms the page count**. Existing output requires `--force`; even
 with that flag, an incomplete transfer leaves the file untouched.
 
-| Exit status | Meaning | |---|---| | 0 | Complete, checksum-verified output
-written | | 2 | Incomplete transfer; output not written | | 1 | Fatal decoding
-or I/O error |
+| Exit status | Meaning |
+|---|---|
+| 0 | Complete, checksum-verified output written |
+| 2 | Incomplete transfer; output not written |
+| 1 | Fatal decoding or I/O error |
 
 Invalid command-line arguments also exit with status 2. The optional JSON
 report lists missing page ranges with inclusive, zero-based endpoints. Without
