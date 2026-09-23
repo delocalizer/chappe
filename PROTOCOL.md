@@ -18,11 +18,14 @@ U+1FB00–U+1FB3B.
 
 The 32-byte header is encoded high nibble first as 64 quadrant cells:
 
-| Bytes | Contents | |---|---| | 0–3 | ASCII `CB01` | | 4 | ASCII `C`
-(calibration), `D` (data), or `E` (end) | | 5 | Bits per payload cell: 4 or 6 |
-| 6–13 | Unsigned big-endian data page index; end uses page count | | 14–15 |
-Unsigned big-endian payload byte length | | 16–31 | First 16 SHA-256 bytes of
-lowercase ASCII hex of bytes 0–15, followed by source payload bytes |
+| Bytes | Contents |
+|---|---|
+| 0–3 | ASCII `CB01` |
+| 4 | ASCII `C` (calibration), `D` (data), or `E` (end) |
+| 5 | Bits per payload cell: 4 or 6 |
+| 6–13 | Unsigned big-endian data page index; end uses page count |
+| 14–15 | Unsigned big-endian payload byte length |
+| 16–31 | First 16 SHA-256 bytes of lowercase ASCII hex of bytes 0–15, followed by source payload bytes |
 
 Calibration uses index and length zero, and cycles through masks in ascending
 order across all payload cells. End screens have length zero and a black body.
