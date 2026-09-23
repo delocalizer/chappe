@@ -108,6 +108,15 @@ For a compressed transmission:
 python receive.py recording.mp4 -o recovered.gz && gzip -dc recovered.gz > recovered.bin
 ```
 
+## Android live receiver
+
+The [Android app](android/README.md) decodes directly from the phone camera,
+shows recovered pages, and saves the file once the transfer is complete.
+Capture and decoding run independently with a bounded disk buffer, so decoding
+can finish after transmission ends. Build instructions and storage limits are
+in its README. Manual testing on an Oppo A54 5G succeeded at a 0.2-second
+hold; 0.1-second transfers did not complete.
+
 ## Reliability and limits
 
 CB01 includes alignment references, three quadrant-encoded header copies, page

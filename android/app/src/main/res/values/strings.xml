@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Chappe</string>
+    <string name="permission_needed">Camera permission is needed to receive a transfer. Reopen the app to try again.</string>
+    <string name="camera_hint">Keep the entire terminal border in view. Start receiving before starting the sender.</string>
+    <string name="preparing">Preparing decoder…</string>
+    <string name="start">Start receiving</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="new_transfer">New transfer</string>
+    <string name="save">Save file</string>
+    <string name="ready">Ready. Start receiving, then run send.sh.</string>
+    <string name="complete">Transfer complete — ready to save.</string>
+    <string name="receiving">Receiving…</string>
+    <string name="progress">%1$s\n%2$d/%3$s pages · %4$d verified bytes\n%5$.1f analyzed frames/s</string>
+    <string name="saved">File saved.</string>
+    <string name="save_failed">Could not save: %1$s\nYou can try again.</string>
+    <string name="receive_failed">Reception stopped: %1$s</string>
+    <string name="diagnostics">\n%1$d × %2$d · %3$d ms/frame · headers in %4$d/%5$d frames</string>
+    <string name="missing_pages">\nMissing pages (from 0): %1$s</string>
+    <string name="buffer_full">Capture paused: buffer full or storage low. Decoding continues. Resume when space is available and replay the same transfer to recover gaps.</string>
+    <string name="buffer_progress">\nQueued: %1$d frames · %2$.1f / 512 MiB</string>
+    <string name="processing">Capture paused — decoding queued frames…</string>
+    <string name="paused">Capture paused.</string>
+</resources>

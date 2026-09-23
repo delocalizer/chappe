@@ -6,3 +6,7 @@ __pycache__/
 /received.gz
 /received.ods
 /tests/fixtures/gzods.*
+/android/.gradle/
+/android/**/build/
+/android/local.properties
+*.apk

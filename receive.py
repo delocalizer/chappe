@@ -231,55 +231,59 @@ class Decoder:
     def frame(self, image):
         observed = set()
         panel_seen = False
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        candidates = find_panels(gray)
-        if self.previous_quad is not None:
-            # Camera motion makes stale coordinates a fallback, not first choice.
-            candidates.append(self.previous_quad)
-        for candidate in candidates:
-            for rotation in range(4):
-                quad = np.roll(candidate, rotation, axis=0)
-                panel = rectify(gray, quad)
-                if panel is None:
+        gray = image if image.ndim == 2 else cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        def candidates():
+            # Reuse geometry only while references, headers and payload checks
+            # agree. A failed attempt still searches this very same frame.
+            if self.previous_quad is not None:
+                yield self.previous_quad
+            for candidate in find_panels(gray):
+                for rotation in range(4):
+                    yield np.roll(candidate, rotation, axis=0)
+
+        for quad in candidates():
+            panel = rectify(gray, quad)
+            if panel is None:
+                continue
+            light = sample_cells(panel, [1, 2, 22], range(2, 66), 4)
+            # Try each copy as well as voting; transitions may mix screens.
+            versions = [np.median(light, axis=0), light.mean(axis=0), *light]
+            headers = []
+            for version in versions:
+                h = parse_header(bytes_from_light(version, 4))
+                if h is not None and h not in headers:
+                    headers.append(h)
+            if not headers:
+                continue
+            self.previous_quad = quad
+            if not panel_seen:
+                self.panels += 1
+                panel_seen = True
+            results = []
+            for h in headers:
+                if h.raw in self.checked:
                     continue
-                light = sample_cells(panel, [1, 2, 22], range(2, 66), 4)
-                # Try each copy as well as voting; transitions may mix screens.
-                versions = [np.median(light, axis=0), light.mean(axis=0), *light]
-                headers = []
-                for version in versions:
-                    h = parse_header(bytes_from_light(version, 4))
-                    if h is not None and h not in headers:
-                        headers.append(h)
-                if not headers:
+                if h.kind != "D":
+                    if h.checks(b""):
+                        results.append((h, b""))
                     continue
-                self.previous_quad = quad
-                if not panel_seen:
-                    self.panels += 1
-                    panel_seen = True
-                results = []
-                for h in headers:
-                    if h.raw in self.checked:
-                        continue
-                    if h.kind != "D":
-                        if h.checks(b""):
-                            results.append((h, b""))
-                        continue
-                    body = sample_cells(panel, range(4, 22), range(2, 78), h.bits)
-                    payload = checked_payload(h, body)
-                    if payload is None and h.raw not in observed:
-                        observed.add(h.raw)
-                        payload = checked_payload(h, self.accumulate(h, body))
-                    if payload is not None:
-                        results.append((h, payload))
-                for h, _ in results:
-                    self.checked[h.raw] = True
-                    self.pending.pop(h.raw, None)
-                while len(self.checked) > MAX_CHECKED_HEADERS:
-                    self.checked.popitem(last=False)
-                if results:
-                    return results
-                if all(h.raw in self.checked for h in headers):
-                    return []
+                body = sample_cells(panel, range(4, 22), range(2, 78), h.bits)
+                payload = checked_payload(h, body)
+                if payload is None and h.raw not in observed:
+                    observed.add(h.raw)
+                    payload = checked_payload(h, self.accumulate(h, body))
+                if payload is not None:
+                    results.append((h, payload))
+            for h, _ in results:
+                self.checked[h.raw] = True
+                self.pending.pop(h.raw, None)
+            while len(self.checked) > MAX_CHECKED_HEADERS:
+                self.checked.popitem(last=False)
+            if results:
+                return results
+            if all(h.raw in self.checked for h in headers):
+                return []
         return []
 
 
